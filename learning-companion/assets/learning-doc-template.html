@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="learning-doc-version" content="1.0">
+<title>{{SUBJECT}} — Learning Document</title>
+<style>
+  :root {
+    --paper: #FBFAF8;
+    --ink: #20241F;
+    --meta: #6F6F6A;
+    --accent: #2F6B5A;
+    --highlight: #F4E87C;
+    --rule: #E3E1DB;
+    --measure: 80ch;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Charter, Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  main { max-width: var(--measure); margin: 0 auto; padding: 4rem 1.25rem 6rem; }
+
+  .eyebrow {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--meta);
+    margin: 0 0 0.4rem;
+  }
+  header h1 {
+    font-size: 2.6rem;
+    line-height: 1.1;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.01em;
+  }
+  header .tagline { color: var(--meta); font-style: italic; margin: 0; }
+  header { margin-bottom: 3.5rem; }
+
+  section { margin-bottom: 3.5rem; }
+  section > h2 {
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* ---- Syllabus ---- */
+  .syllabus { list-style: none; padding: 0; margin: 0; counter-reset: topic; }
+  .syllabus > li { padding: 0.3rem 0; }
+  .syllabus > li::before {
+    counter-increment: topic;
+    content: counter(topic, decimal-leading-zero);
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.78rem;
+    color: var(--meta);
+    margin-right: 0.75rem;
+  }
+  .syllabus li.done { color: var(--meta); }
+  .syllabus li.done > .topic-name::after { content: " ✓"; color: var(--accent); }
+  .syllabus li.active > .topic-name {
+    background: linear-gradient(transparent 55%, var(--highlight) 55%);
+    padding: 0 0.15em;
+  }
+  .syllabus .tangents { list-style: none; padding: 0.15rem 0 0.15rem 2.4rem; margin: 0; }
+  .syllabus .tangents li { font-size: 0.92rem; padding: 0.1rem 0; }
+  .syllabus .tangents li::before {
+    content: "↳ ";
+    color: var(--meta);
+    font-family: ui-monospace, monospace;
+  }
+  .syllabus .tangents li.done { color: var(--meta); }
+
+  /* ---- Concept map ---- */
+  .map-note { font-size: 0.88rem; color: var(--meta); font-style: italic; margin-top: 0.75rem; }
+  pre.mermaid {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+  }
+
+  /* ---- Textbook ---- */
+  .entry { margin: 0 0 2.75rem; }
+  .commit-line {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    color: var(--meta);
+    border-top: 1px solid var(--rule);
+    padding-top: 0.6rem;
+    margin-bottom: 0.35rem;
+  }
+  .entry h3 { font-size: 1.3rem; margin: 0 0 0.6rem; }
+  .entry.aside h3 { font-style: italic; }
+  .entry.aside { padding-left: 1.1rem; border-left: 2px solid var(--highlight); }
+  .entry-body p { margin: 0 0 0.9rem; }
+  .entry-body :last-child { margin-bottom: 0; }
+  .entry-body code {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    background: #F1EFE9;
+    padding: 0.08em 0.3em;
+    border-radius: 3px;
+  }
+  .textbook-empty { color: var(--meta); font-style: italic; }
+  .entry.superseded { opacity: 0.55; }
+
+  /* ---- References ---- */
+  .references { list-style: none; padding: 0; margin: 0; }
+  .ref { padding: 0.55rem 0; border-bottom: 1px solid var(--rule); }
+  .ref-doc {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+    background: #F1EFE9;
+    padding: 0.08em 0.4em;
+    border-radius: 3px;
+  }
+  .ref-meta {
+    display: block;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--meta);
+    margin-top: 0.2rem;
+  }
+  .ref-note { display: block; font-size: 0.88rem; margin-top: 0.15rem; }
+  .refs-empty { color: var(--meta); font-style: italic; }
+
+  /* ---- Entry media (AI-made figures, below the learner's text) ---- */
+  .entry-media { margin-top: 1.2rem; }
+  .entry-media .media-label {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--meta);
+    margin: 0 0 0.5rem;
+  }
+  .entry-media figure {
+    margin: 0 0 1.1rem;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+  .entry-media figure:last-child { margin-bottom: 0; }
+  .entry-media figcaption {
+    font-size: 0.85rem;
+    color: var(--meta);
+    margin-top: 0.6rem;
+    line-height: 1.5;
+  }
+  .entry-media svg { max-width: 100%; height: auto; display: block; }
+
+  /* ---- Session log ---- */
+  .session-log { list-style: none; padding: 0; margin: 0; font-size: 0.92rem; }
+  .session-log li { padding: 0.45rem 0; border-bottom: 1px solid var(--rule); }
+  .session-log .session-date {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--meta);
+    display: block;
+  }
+
+  /* ---- Machine sections (footer) ---- */
+  footer { margin-top: 5rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
+  footer details { margin: 0.5rem 0; }
+  footer summary {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--meta);
+    cursor: pointer;
+  }
+  footer pre {
+    background: #F1EFE9;
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.74rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  a { color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+  /* ---- Edit toolbar ---- */
+  #doc-toolbar {
+    position: fixed;
+    right: 0.9rem;
+    bottom: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    z-index: 10;
+  }
+  #doc-toolbar button {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--meta);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 0.55rem 0.85rem;
+    cursor: pointer;
+  }
+  #doc-toolbar button:hover { color: var(--ink); border-color: var(--meta); }
+  #doc-toolbar button.attention { color: var(--accent); border-color: var(--accent); }
+  #toolbar-flash {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--meta);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  body.editing [contenteditable="true"] {
+    outline: 1px dashed #B9B6AD;
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  /* ---- Print: just the textbook ---- */
+  @media print {
+    #doc-toolbar, footer, noscript, .map-note { display: none; }
+    body { font-size: 11.5pt; }
+    main { padding: 0; max-width: none; }
+    .entry, .entry-media figure { break-inside: avoid; }
+    section { break-before: auto; }
+    pre.mermaid, .entry-media figure { border-color: #999; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <p class="eyebrow">Learning document · started {{DATE}}</p>
+  <h1>{{SUBJECT}}</h1>
+  <p class="tagline">{{SUBJECT_TAGLINE}}</p>
+</header>
+
+<section id="syllabus">
+  <p class="eyebrow">Guide, not rail</p>
+  <h2>Syllabus</h2>
+  <ol class="syllabus">
+{{SYLLABUS_ITEMS}}
+<!-- Syllabus item format:
+  <li class="pending|active|done"><span class="topic-name">Topic Name</span>
+    <ul class="tangents">
+      <li class="done"><span class="topic-name">Tangent name</span></li>
+    </ul>
+  </li>
+-->
+  </ol>
+</section>
+
+<section id="concept-map">
+  <p class="eyebrow">Names and links only — no definitions</p>
+  <h2>Concept map</h2>
+  <pre class="mermaid">
+{{MERMAID_GRAPH}}
+  </pre>
+  <p class="map-note">Rendered when online; shown as graph source when offline.</p>
+</section>
+
+<section id="textbook">
+  <p class="eyebrow">Written by the learner · committed verbatim · never edited</p>
+  <h2>Textbook</h2>
+  <p class="textbook-empty">Nothing committed yet. Entries appear here in the order they were learned.</p>
+<!-- Entry format (AI: copy exactly; remove the .textbook-empty paragraph on first commit):
+  <article class="entry" id="entry-001">
+    <div class="commit-line">#001 · YYYY-MM-DD · session N · Topic Name</div>
+    <h3>Topic Name</h3>
+    <div class="entry-body">
+      <p>The learner's committed text, verbatim. Paragraph breaks preserved.</p>
+    </div>
+    <div class="entry-media">                       (optional, AI-made)
+      <p class="media-label">Figures · AI-made</p>
+      <figure id="e001-fig1">
+        ...inline SVG, Mermaid pre, or a self-contained interactive:
+        scoped markup + <style> + <script>(IIFE)</script>, all element
+        ids prefixed with the entry id (e001-) to avoid collisions.
+        No external libraries beyond the Mermaid already on this page.
+        <figcaption>What it shows; reference the learner's text by
+        paragraph if helpful ("illustrates the dispatch path in ¶2").</figcaption>
+      </figure>
+    </div>
+  </article>
+  Tangent entries use class="entry aside" and a commit-line ending in: tangent of Parent Topic
+  Superseded entries (after a revisit) gain class="entry superseded" and " &middot; superseded by #00N" appended to their commit-line.
+  .entry-body is the learner's alone — never insert anything into it.
+-->
+<!-- APPEND NEW TEXTBOOK ENTRIES ABOVE THIS LINE -->
+</section>
+
+<section id="references">
+  <p class="eyebrow">Saved on request &mdash; nothing lands here unasked</p>
+  <h2>References</h2>
+  <p class="refs-empty">Nothing saved yet. Study material the learner chooses to keep lands here.</p>
+<!-- Reference item format (AI: copy exactly; remove the .refs-empty paragraph on first save):
+  <li class="ref">
+    <a href="https://example.com/...">Title of the resource</a>
+    <span class="ref-meta">article &middot; for: Topic Name &middot; suggested by AI</span>
+    <span class="ref-note">One line on why it's worth the learner's time.</span>
+  </li>
+  Learner-supplied local documents (cannot be embedded):
+  <li class="ref">
+    <span class="ref-doc">some-paper.pdf</span>
+    <span class="ref-meta">local file &middot; for: Topic Name &middot; supplied by learner</span>
+    <span class="ref-note">What it covers. Ask the learner to re-attach it when its topic comes up.</span>
+  </li>
+-->
+  <ul class="references">
+<!-- APPEND NEW REFERENCES ABOVE THIS LINE -->
+  </ul>
+</section>
+
+<section id="session-log">
+  <p class="eyebrow">Append-only</p>
+  <h2>Session log</h2>
+  <ul class="session-log">
+{{SESSION_LOG_ITEMS}}
+<!-- Session log item format:
+  <li><span class="session-date">Session N · YYYY-MM-DD</span>
+  What was covered, where it stopped, in 3–5 lines of plain prose.</li>
+-->
+<!-- APPEND NEW SESSION LOG ENTRIES ABOVE THIS LINE -->
+  </ul>
+</section>
+
+<footer>
+  <details id="how-this-works">
+    <summary>How this document works</summary>
+    <pre>
+This is a learning document: a personal textbook you write yourself,
+one committed summary at a time, while learning a subject in
+conversation with an AI tutor.
+
+THE LOOP
+You learn in conversation. At natural stopping points the AI proposes
+a checkpoint: it recaps, you write the entry in your own words, it
+gives honest feedback, you revise, you commit. Committed entries are
+never touched by the AI again — not even typos. The Textbook section
+above is your own words, permanently.
+
+THIS FILE IS THE SAVE STATE
+Everything lives in this one file: syllabus, concept map, textbook,
+session log, and the AI's own working state. The chat is disposable;
+this file is not. Keep it safe.
+
+EDITING
+The Edit button (bottom right) makes your text editable in the
+browser. Save writes the file back directly in desktop Chrome/Edge
+(you pick the file once); in other browsers and on phones it
+downloads a fresh copy — replace the old file with it. The AI's
+no-edit rules bind the AI, not you: edit your own entries freely.
+
+RESUMING
+Upload this file to Claude and say "resume my learning". The file
+carries its own instructions, so this works even on an account
+without the learning-companion skill installed. If you also kept the
+companion transcript .md, attach that too to keep one continuous
+conversation log.
+    </pre>
+  </details>
+
+  <p class="eyebrow">For the AI — open if curious</p>
+
+  <details id="ai-state">
+    <summary>AI state</summary>
+    <pre id="ai-state-json">
+{{AI_STATE_JSON}}
+<!-- AI state schema. Fill real JSON above; KEEP this comment - it documents the format for every future session:
+{
+  "subject": "",
+  "position": { "last_committed": "", "in_progress": "none, or the topic mid-flight", "next_topic": "" },
+  "open_threads": ["questions or tangents left hanging"],
+  "misconceptions": ["active confusions to watch for and revisit"],
+  "parked": ["topics or questions deliberately deferred"],
+  "learner_profile": {
+    "level": "calibration findings, refined over time",
+    "works_well": ["teaching approaches that land"],
+    "avoid": ["approaches that don't"],
+    "notes": "anything else useful; refine, never reset"
+  },
+  "resume_instruction": "One or two sentences from the previous AI instance to the next one."
+}
+-->
+    </pre>
+  </details>
+
+  <details id="ai-instructions">
+    <summary>AI instructions</summary>
+    <pre>
+RESUME PROTOCOL — for the AI reading this document. (Humans: this is the
+machinery; everything above is for you.)
+
+This file is a learning document: a personal textbook the learner writes
+themselves, one committed summary at a time, across many sessions. You are
+the tutor for the next session. This block never changes; carry it through
+verbatim whenever you regenerate this file.
+
+ON RESUME
+1. Read the AI state JSON above. Reconstruct: position, open threads,
+   misconceptions, parked items, learner profile.
+2. Open with a catch-up summary — conversational, under ten lines:
+   - Session N, last commit #00X (date) — the staleness line, always
+     first. If it doesn't match what the learner remembers, stop and
+     help them find the newer copy of the file before changing
+     anything; copies can diverge when moving between platforms.
+   - Last time: 1-2 lines from the latest session log entry.
+   - Progress: topics done out of total, and the current topic.
+   - Still open: open threads or parked items worth surfacing now —
+     only if any, at most 2-3. Keep misconceptions and the learner
+     profile to yourself; they're working notes, not a report card.
+   - Next: the proposed step, from the resume_instruction in state.
+3. Ask if they have the session transcript .md from previous sessions; if
+   supplied, append this session to it. If not, start a new one and note
+   the gap.
+4. Confirm where to pick up, then teach.
+5. If the document arrives damaged — sections missing, state JSON
+   malformed, markers gone — say plainly what's broken and propose the
+   minimal repair. Never silently rebuild content sections; damage is
+   never license to rewrite committed entries.
+6. If the learner seems new to this document (it may have been shared
+   with them), point them at the "How this document works" section
+   rather than improvising an orientation.
+
+TEACHING
+- Sketch the core of each new concept first — the scaffolding the learner
+  could not invent — then shift the work to them: predictions, edge cases,
+  connections, applications. Thought-provoking questions over lectures.
+- If they ask to just be told, tell them immediately. No friction.
+- Follow tangents; they are how this learner works. Track the parent topic.
+  Productive tangents get checkpointed like any topic and enter the
+  textbook as asides. Dead-end tangents: surface the syllabus as the
+  way back.
+- Keep refining the learner_profile from how they respond. Never reset it.
+- When a topic feels covered, propose a checkpoint. The learner decides.
+
+CHECKPOINT — COMMIT PROTOCOL
+A checkpoint is a pause, not a test. The one rule that matters: the
+committed entry is written by the learner, in their own words.
+1. Announce the checkpoint; name the topic. Keep it light.
+2. Recap what was covered — a short conversational summary, a refresher
+   rather than a model answer.
+3. Invite them to write the entry in their own words. From memory or
+   with the recap in view — their call. No quiz framing, no pressure.
+4. Offer feedback where it genuinely helps: real gaps, errors worth
+   fixing. Skip nitpicks; don't polish their voice out of it.
+5. They revise if they want. Loop as needed.
+6. On their clear go-ahead, commit their final text to the Textbook
+   section VERBATIM.
+
+AFTER COMMIT — update in one pass:
+- Syllabus statuses (pending/active/done); graft tangents under parents.
+- Concept map: add nodes and edges. Topic names and links only. Never
+  definitions or details.
+- AI state JSON: position, threads, misconceptions, parked, profile,
+  and a resume_instruction for the next instance.
+- Session log: append or update this session's entry (3–5 lines).
+- Persist the file. Append to the transcript .md.
+
+REVISITS
+A learner can revisit any committed topic: teach and checkpoint exactly
+as normal — nothing about the conversation differs. Only the commit does:
+- The new entry is appended like any other; its commit line ends with:
+  revisits #00X.
+- Then mark the old entry: add class "superseded" to its article tag and
+  append " &middot; superseded by #00N" to its commit-line. This metadata
+  mark is the ONLY sanctioned change to an existing entry block, ever —
+  .entry-body remains untouchable. Supersede, never amend: old entries
+  are the history of the learner's understanding, and they stay.
+
+FIGURES & INTERACTIVES (optional, AI-made)
+- When a concept is genuinely visual, offer to make a diagram, animation,
+  or small interactive for the entry — at commit time, or whenever the
+  learner asks during teaching (build it in conversation, attach at
+  commit). Offer, don't push; many entries need none. Always show the
+  figure for approval before it enters the document (see REFERENCES &
+  STUDY MATERIAL for how to show things per environment).
+- Figures live in an entry-media block BELOW the learner's text, labeled
+  AI-made. Never insert anything into .entry-body — the learner's prose
+  container is theirs alone. Captions may point into the text by
+  paragraph ("illustrates the dispatch path in para 2") to anchor a
+  figure to its place.
+- Each figure is fully self-contained: inline SVG, a Mermaid pre, or
+  scoped markup + style + an IIFE script. Prefix all ids with the entry
+  id (e001-...) so widgets never collide. No external libraries beyond
+  the Mermaid already loaded. Interactives should degrade to a sensible
+  static state without JS. ALL runtime DOM mutation - created
+  elements, class or style toggles, text changes - must happen inside an
+  empty &lt;div class="js-mount"&gt; in the figure; the script builds its
+  whole mutable UI there on load. Static no-JS fallback markup goes in
+  &lt;noscript&gt;, which is never mutated. The document's save function
+  empties js-mount divs, so saved files never contain baked runtime
+  state and every load-edit-save cycle is idempotent.
+- Media blocks are AI-authored, so unlike the text they MAY be revised
+  or replaced — but only when the learner asks. On regeneration they are
+  carried through byte-for-byte like everything else.
+
+REFERENCES & STUDY MATERIAL
+- Offer supplementary material when it would genuinely help — a topic
+  just wrapped, the learner wants more depth, a canonical resource
+  exists: articles, official docs, videos, guides. Use web search when
+  available; never invent or guess links.
+- Show first, save on request — for references AND figures alike:
+  present the material in conversation before it touches the document.
+  Links: list them in chat. Figures: render for approval — as an
+  artifact in chat environments, or as a small preview file the learner
+  can open when working on a filesystem. Nothing enters the document
+  until the learner says keep it.
+- Saved items go to the References section: title, link, type, the
+  topic served, who suggested it, one line on why. Added or removed
+  only on the learner's word.
+- The learner may supply their own links and documents at any time.
+  Links go to References marked learner-supplied. Local files (PDFs
+  etc.) cannot be embedded: record filename plus a note in References,
+  and when a topic needs that document and it is not in the current
+  context, ask the learner to re-attach it. Never bluff familiarity
+  with a file you cannot currently see.
+
+HARD RULES
+- Committed textbook entries are NEVER edited — not typos, not errors,
+  not formatting. Corrections are new entries the learner writes.
+  Nothing is ever inserted into an .entry-body. Entry-media blocks may
+  change only at the learner's explicit request. Exception, exactly one:
+  a revisit marks the old entry superseded — class plus commit-line
+  note, metadata only (see REVISITS).
+- Session log is append-only.
+- This instructions block passes through unchanged.
+- The document's own machinery — the toolbar markup, the stylesheet, the
+  editor/save script at the bottom of the file, the "How this document
+  works" block, and the learning-doc-version meta tag — passes through
+  unchanged on regeneration.
+- Concept map carries no content beyond names and relationships.
+
+LEARNER EDITS
+The document has an Edit/Save toolbar: the learner can edit their own
+entries (and other human-facing text) directly in the browser and save
+the file. This is their right — the no-edit rules above bind the AI,
+not the learner. Treat whatever the uploaded file contains as canonical;
+do not flag, revert, or comment on differences from what you remember
+committing.
+
+PERSISTENCE
+- Filesystem available (e.g. Claude Code): edit this file in place.
+  Insert new content above the APPEND marker comments. Touch nothing the
+  hard rules protect.
+- Chat with artifacts (e.g. claude.ai): regenerate the full file at each
+  checkpoint, mechanically — every existing textbook entry, log line, and
+  this block carried through byte-for-byte; new content only at the
+  append markers. Remind the learner to download the updated file before
+  the session ends.
+- Transcript: a separate append-only markdown file named
+  &lt;subject-slug&gt;-transcript.md, organized by session with date
+  headers, lightly cleaned (drop false starts, keep substance).
+    </pre>
+  </details>
+</footer>
+
+</main>
+
+<div id="doc-toolbar" aria-label="Document tools">
+  <span id="toolbar-flash"></span>
+  <button id="btn-edit" type="button">Edit</button>
+  <button id="btn-save" type="button">Save</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // Stash concept-map sources BEFORE Mermaid renders them, so saving
+  // writes back graph source instead of baked SVG.
+  var mapSources = [];
+  document.querySelectorAll('pre.mermaid').forEach(function (el) {
+    mapSources.push(el.textContent);
+  });
+
+  // Render the concept map if Mermaid loaded; otherwise the raw graph
+  // source stays visible in the styled <pre> (offline fallback).
+  if (window.mermaid) {
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+  }
+
+  // ---- In-place editing and self-save ----------------------------------
+  // Everything human-authored is editable in the browser. Saving writes
+  // the file back directly where the File System Access API exists
+  // (desktop Chrome/Edge); elsewhere it downloads a fresh copy to
+  // replace the old file with.
+  var EDITABLE = '.entry-body, .entry h3, .session-log li, header .tagline, .syllabus .topic-name';
+  var dirty = false;
+  var fileHandle = null;
+
+  var btnEdit = document.getElementById('btn-edit');
+  var btnSave = document.getElementById('btn-save');
+  var flash = document.getElementById('toolbar-flash');
+
+  function setEditing(on) {
+    document.body.classList.toggle('editing', on);
+    document.querySelectorAll(EDITABLE).forEach(function (el) {
+      if (on) el.setAttribute('contenteditable', 'true');
+      else el.removeAttribute('contenteditable');
+    });
+    btnEdit.textContent = on ? 'Done' : 'Edit';
+  }
+
+  btnEdit.addEventListener('click', function () {
+    setEditing(!document.body.classList.contains('editing'));
+  });
+
+  document.addEventListener('input', function (e) {
+    if (e.target.closest && e.target.closest('[contenteditable="true"]')) {
+      dirty = true;
+      btnSave.classList.add('attention');
+    }
+  });
+
+  function serialize() {
+    var clone = document.documentElement.cloneNode(true);
+    // Restore concept-map sources (same document order as the stash).
+    clone.querySelectorAll('pre.mermaid').forEach(function (pre, i) {
+      pre.removeAttribute('data-processed');
+      if (mapSources[i] !== undefined) pre.textContent = mapSources[i];
+    });
+    // Strip editing state.
+    clone.querySelectorAll('[contenteditable]').forEach(function (el) {
+      el.removeAttribute('contenteditable');
+    });
+    var body = clone.querySelector('body');
+    if (body) body.classList.remove('editing');
+    var be = clone.querySelector('#btn-edit');
+    if (be) be.textContent = 'Edit';
+    var fl = clone.querySelector('#toolbar-flash');
+    if (fl) { fl.textContent = ''; fl.style.opacity = ''; }
+    // Reset dynamic widget mounts; their scripts rebuild them on load.
+    clone.querySelectorAll('.js-mount').forEach(function (el) { el.innerHTML = ''; });
+    return '<!DOCTYPE html>\n' + clone.outerHTML;
+  }
+
+  function note(msg) {
+    flash.textContent = msg;
+    flash.style.opacity = '1';
+    setTimeout(function () { flash.style.opacity = '0'; }, 2200);
+  }
+
+  function suggestedName() {
+    var n = decodeURIComponent(location.pathname.split('/').pop() || '');
+    return /\.html?$/.test(n) ? n : 'learning-document.html';
+  }
+
+  async function save() {
+    var html = serialize();
+    if (window.showSaveFilePicker) {
+      try {
+        if (!fileHandle) {
+          fileHandle = await window.showSaveFilePicker({
+            suggestedName: suggestedName(),
+            types: [{ description: 'HTML document', accept: { 'text/html': ['.html'] } }]
+          });
+        }
+        var w = await fileHandle.createWritable();
+        await w.write(html);
+        await w.close();
+        dirty = false;
+        btnSave.classList.remove('attention');
+        note('Saved');
+        return;
+      } catch (err) {
+        if (err && err.name === 'AbortError') return; // user cancelled the picker
+        fileHandle = null; // fall through to download
+      }
+    }
+    var blob = new Blob([html], { type: 'text/html' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = suggestedName();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    dirty = false;
+    btnSave.classList.remove('attention');
+    note('Downloaded copy');
+  }
+
+  btnSave.addEventListener('click', save);
+
+  window.addEventListener('beforeunload', function (e) {
+    if (dirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+})();
+</script>
+</body>
+</html>
