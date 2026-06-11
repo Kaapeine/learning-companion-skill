@@ -4,6 +4,8 @@
 
 A Claude skill for long-running, multi-session learning — where **you write the textbook**.
 
+![The learning document — title and syllabus](screenshots/syllabus.png)
+
 You bring a subject (a topic list, a textbook index, or just a name). The AI completes the picture, calibrates to your level, builds a syllabus, and teaches Socratically — sketching each concept's core, then making you do the thinking through predictions, edge cases, and connections. At natural stopping points it proposes a checkpoint: it recaps, **you write the entry in your own words**, it gives honest feedback, you revise, you commit. Your committed text goes into the document verbatim and is never touched by the AI again — not even typos. Over weeks, the document becomes a textbook of the subject written entirely in your own voice, in the order you actually learned it.
 
 ## The document
@@ -20,6 +22,20 @@ Everything lives in **one self-contained HTML file** — the single source of tr
 Because the instructions travel inside the file, the document is **self-bootstrapping**: upload it to any Claude conversation and say "resume my learning" — it works even without this skill installed. Share a document with a friend and it carries everything they need.
 
 The file is also **directly editable**: an Edit/Save toolbar lets you edit your own entries in the browser. Save writes the file back in place on desktop Chrome/Edge (File System Access API) and downloads a fresh copy everywhere else. Saving is idempotent — Mermaid sources and widget runtime state are never baked into the file.
+
+## Screenshots
+
+**Concept map & textbook** — a Mermaid graph that grows as you learn, above your committed entries in learning order with git-style commit lines.
+
+![Concept map and textbook entries](screenshots/concept-map-and-textbook.png)
+
+**Figures** — optional AI-made illustrations (inline SVG, Mermaid, or interactive widgets) in clearly labeled blocks below your text.
+
+![AI-made figures](screenshots/figures.png)
+
+**Session log** — an append-only record, a few lines per session, with the AI state and instructions tucked into collapsed blocks below.
+
+![Session log and collapsed AI blocks](screenshots/session-log.png)
 
 ## Install
 
