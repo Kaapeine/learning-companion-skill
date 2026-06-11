@@ -1,7 +1,5 @@
 # Learning Companion
 
-<!-- Before publishing: replace REPLACE_ME_GITHUB_USER in learning-companion/SKILL.md and REPLACE_ME_YOUR_NAME in LICENSE. -->
-
 A Claude skill for long-running, multi-session learning — where **you write the textbook**.
 
 ![The learning document — title and syllabus](screenshots/syllabus.png)
@@ -38,10 +36,11 @@ The file is also **directly editable**: an Edit/Save toolbar lets you edit your 
 ![Session log and collapsed AI blocks](screenshots/session-log.png)
 
 ## Install
+Download the repo to get the full skill folder. Or download just the latest the SKILL.md from the Releases section. 
 
-**claude.ai** (Pro plan or higher): Settings → Capabilities → enable *Code execution and file creation*, then Customize → Skills → Upload skill → select the packaged zip (rename `learning-companion.skill` to `.zip` if the picker insists).
+**claude.ai** (Pro plan or higher): Settings → Capabilities → enable *Code execution and file creation*, then Customize → Skills → Upload skill → select the skill file
 
-**Claude Code**: unzip into `~/.claude/skills/learning-companion/` (personal) or `.claude/skills/learning-companion/` (per project).
+**Claude Code**: Place `learning-companion/` folder from the repoo in your `~/.claude/skills/learning-companion/` (personal) or `.claude/skills/learning-companion/` (per project).
 
 ## Use
 
