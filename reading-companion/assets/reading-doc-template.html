@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="reading-doc-version" content="1.0">
+<title>{{SUBJECT}} — Reading Document</title>
+<style>
+  :root {
+    --paper: #FBFAF8;
+    --ink: #20241F;
+    --meta: #6F6F6A;
+    --accent: #2F6B5A;
+    --highlight: #F4E87C;
+    --rule: #E3E1DB;
+    --measure: 80ch;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Charter, Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  main { max-width: var(--measure); margin: 0 auto; padding: 4rem 1.25rem 6rem; }
+
+  .eyebrow {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--meta);
+    margin: 0 0 0.4rem;
+  }
+  header h1 {
+    font-size: 2.6rem;
+    line-height: 1.1;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.01em;
+  }
+  header .tagline { color: var(--meta); font-style: italic; margin: 0; }
+  header { margin-bottom: 3.5rem; }
+
+  section { margin-bottom: 3.5rem; }
+  section > h2 {
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* ---- Syllabus ---- */
+  .syllabus { list-style: none; padding: 0; margin: 0; counter-reset: topic; }
+  .syllabus > li { padding: 0.3rem 0; }
+  .syllabus > li::before {
+    counter-increment: topic;
+    content: counter(topic, decimal-leading-zero);
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.78rem;
+    color: var(--meta);
+    margin-right: 0.75rem;
+  }
+  .syllabus li.done { color: var(--meta); }
+  .syllabus li.done > .topic-name::after { content: " ✓"; color: var(--accent); }
+  .syllabus li.active > .topic-name {
+    background: linear-gradient(transparent 55%, var(--highlight) 55%);
+    padding: 0 0.15em;
+  }
+  .syllabus .tangents { list-style: none; padding: 0.15rem 0 0.15rem 2.4rem; margin: 0; }
+  .syllabus .tangents li { font-size: 0.92rem; padding: 0.1rem 0; }
+  .syllabus .tangents li::before {
+    content: "↳ ";
+    color: var(--meta);
+    font-family: ui-monospace, monospace;
+  }
+  .syllabus .tangents li.done { color: var(--meta); }
+
+  /* ---- Concept map ---- */
+  .map-note { font-size: 0.88rem; color: var(--meta); font-style: italic; margin-top: 0.75rem; }
+  pre.mermaid {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+  }
+
+  /* ---- Deck (flashcards) ---- */
+  .deck-empty { color: var(--meta); font-style: italic; }
+  .deck-topic { margin: 0 0 2.4rem; }
+  .deck-topic > h3 {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--meta);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 0.4rem;
+    margin: 0 0 1rem;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 0.9rem 1.1rem;
+    margin: 0 0 0.75rem;
+    cursor: pointer;
+    position: relative;
+  }
+  .card:last-child { margin-bottom: 0; }
+  .card-front { font-weight: 600; padding-right: 3.5rem; }
+  .flip-hint {
+    position: absolute;
+    top: 0.9rem;
+    right: 1.1rem;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--meta);
+  }
+  .card.revealed .flip-hint { color: var(--accent); }
+  .card-back {
+    display: none;
+    margin-top: 0.7rem;
+    padding-top: 0.7rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .card.revealed .card-back { display: block; }
+  .card-back code, .card-front code {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    background: #F1EFE9;
+    padding: 0.08em 0.3em;
+    border-radius: 3px;
+  }
+  .card .commit-line {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+    color: var(--meta);
+    margin-top: 0.7rem;
+  }
+
+  /* ---- Notes (optional, learner-written prose) ---- */
+  .notes-empty { color: var(--meta); font-style: italic; }
+  .note { margin: 0 0 2.75rem; }
+  .note .commit-line {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    color: var(--meta);
+    border-top: 1px solid var(--rule);
+    padding-top: 0.6rem;
+    margin-bottom: 0.35rem;
+  }
+  .note h3 { font-size: 1.3rem; margin: 0 0 0.6rem; }
+  .note-body p { margin: 0 0 0.9rem; }
+  .note-body :last-child { margin-bottom: 0; }
+  .note-body code {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    background: #F1EFE9;
+    padding: 0.08em 0.3em;
+    border-radius: 3px;
+  }
+
+  /* ---- Note media (AI-made figures, below the learner's text) ---- */
+  .note-media { margin-top: 1.2rem; }
+  .note-media .media-label {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--meta);
+    margin: 0 0 0.5rem;
+  }
+  .note-media figure {
+    margin: 0 0 1.1rem;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+  .note-media figure:last-child { margin-bottom: 0; }
+  .note-media figcaption {
+    font-size: 0.85rem;
+    color: var(--meta);
+    margin-top: 0.6rem;
+    line-height: 1.5;
+  }
+  .note-media svg { max-width: 100%; height: auto; display: block; }
+
+  /* ---- Sources read ---- */
+  .sources { list-style: none; padding: 0; margin: 0; }
+  .source { padding: 0.55rem 0; border-bottom: 1px solid var(--rule); }
+  .source-doc {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+    background: #F1EFE9;
+    padding: 0.08em 0.4em;
+    border-radius: 3px;
+  }
+  .source-meta {
+    display: block;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--meta);
+    margin-top: 0.2rem;
+  }
+  .source-note { display: block; font-size: 0.88rem; margin-top: 0.15rem; }
+  .sources-empty { color: var(--meta); font-style: italic; }
+
+  /* ---- Session log ---- */
+  .session-log { list-style: none; padding: 0; margin: 0; font-size: 0.92rem; }
+  .session-log li { padding: 0.45rem 0; border-bottom: 1px solid var(--rule); }
+  .session-log .session-date {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--meta);
+    display: block;
+  }
+
+  /* ---- Machine sections (footer) ---- */
+  footer { margin-top: 5rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
+  footer details { margin: 0.5rem 0; }
+  footer summary {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--meta);
+    cursor: pointer;
+  }
+  footer pre {
+    background: #F1EFE9;
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.74rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  a { color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+  /* ---- Toolbar ---- */
+  #doc-toolbar {
+    position: fixed;
+    right: 0.9rem;
+    bottom: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    z-index: 10;
+  }
+  #doc-toolbar button {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--meta);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 0.55rem 0.85rem;
+    cursor: pointer;
+  }
+  #doc-toolbar button:hover { color: var(--ink); border-color: var(--meta); }
+  #doc-toolbar button.attention { color: var(--accent); border-color: var(--accent); }
+  #btn-review.has-due { color: var(--accent); border-color: var(--accent); }
+  #toolbar-flash {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--meta);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  body.editing [contenteditable="true"] {
+    outline: 1px dashed #B9B6AD;
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  body.editing .card { cursor: text; }
+  body.editing .card .card-back { display: block; }
+  body.editing .flip-hint { display: none; }
+
+  /* ---- Review overlay ---- */
+  #review-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 22, 20, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    z-index: 30;
+  }
+  #review-overlay[hidden] { display: none; }
+  .review-panel {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    box-shadow: 0 14px 44px rgba(0, 0, 0, 0.28);
+    max-width: 640px;
+    width: 100%;
+    padding: 1.75rem;
+  }
+  .rv-progress {
+    display: flex;
+    justify-content: space-between;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--meta);
+    margin-bottom: 1.1rem;
+  }
+  .rv-front { font-size: 1.3rem; font-weight: 600; margin: 0 0 1rem; }
+  .rv-back {
+    border-top: 1px dashed var(--rule);
+    padding-top: 1rem;
+    margin-bottom: 1.4rem;
+  }
+  .rv-back code, .rv-front code {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    background: #F1EFE9;
+    padding: 0.08em 0.3em;
+    border-radius: 3px;
+  }
+  .rv-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .rv-actions button {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 5px;
+    padding: 0.6rem 0.95rem;
+    cursor: pointer;
+    flex: 1 1 auto;
+  }
+  .rv-actions button:hover { border-color: var(--accent); color: var(--accent); }
+  .rv-actions .rv-flip { flex-basis: 100%; }
+  .rv-sub {
+    font-size: 0.72rem;
+    color: var(--meta);
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    margin-top: 0.9rem;
+    text-align: center;
+  }
+  .rv-message { font-size: 1.05rem; margin: 0.5rem 0 1.4rem; }
+
+  /* ---- Print: deck + notes ---- */
+  @media print {
+    #doc-toolbar, #review-overlay, footer, noscript, .map-note, .flip-hint { display: none; }
+    body { font-size: 11.5pt; }
+    main { padding: 0; max-width: none; }
+    .card .card-back { display: block; }
+    .card, .note, .note-media figure { break-inside: avoid; }
+    section { break-before: auto; }
+    pre.mermaid, .note-media figure { border-color: #999; }
+  }
+</style>
+<noscript><style>
+  /* No JS: cards can't flip, so show every answer. */
+  .card-back { display: block !important; }
+  .flip-hint { display: none !important; }
+</style></noscript>
+</head>
+<body>
+<main>
+
+<header>
+  <p class="eyebrow">Reading document · started {{DATE}}</p>
+  <h1>{{SUBJECT}}</h1>
+  <p class="tagline">{{SUBJECT_TAGLINE}}</p>
+</header>
+
+<section id="syllabus">
+  <p class="eyebrow">Guide, not rail</p>
+  <h2>Syllabus</h2>
+  <ol class="syllabus">
+{{SYLLABUS_ITEMS}}
+<!-- Syllabus item format:
+  <li class="pending|active|done"><span class="topic-name">Topic Name</span>
+    <ul class="tangents">
+      <li class="done"><span class="topic-name">Tangent name</span></li>
+    </ul>
+  </li>
+-->
+  </ol>
+</section>
+
+<section id="concept-map">
+  <p class="eyebrow">Names and links only — no definitions</p>
+  <h2>Concept map</h2>
+  <pre class="mermaid">
+{{MERMAID_GRAPH}}
+  </pre>
+  <p class="map-note">Rendered when online; shown as graph source when offline.</p>
+</section>
+
+<section id="deck">
+  <p class="eyebrow">AI-drafted · learner-approved · reviewed with spaced repetition</p>
+  <h2>Deck</h2>
+  <p class="deck-empty">No cards yet. Approved flashcards appear here, grouped by topic. Click a card to flip it; use the Review button (bottom right) to study what's due.</p>
+<!-- Deck structure (AI: copy exactly; remove the .deck-empty paragraph on first commit).
+     Cards are grouped by topic. One group per topic:
+  <div class="deck-topic">
+    <h3>Topic Name</h3>
+    <article class="card" id="card-001"
+             data-ef="2.50" data-interval="0" data-reps="0"
+             data-due="YYYY-MM-DD" data-last="">
+      <span class="flip-hint">flip</span>
+      <div class="card-front">The question / prompt, exactly as approved.</div>
+      <div class="card-back">The answer, exactly as approved.</div>
+      <div class="commit-line">#001 · YYYY-MM-DD · session N</div>
+    </article>
+    ...more cards for this topic...
+  </div>
+  SCHEDULING DATA is owned by the built-in Review UI alone. Seed a new card with
+  data-ef="2.50" data-interval="0" data-reps="0" data-due set to today (so it's
+  due immediately) and data-last="". NEVER hand-edit these attributes and never
+  recompute a schedule yourself — the Review button does that. Card FRONT/BACK
+  text is the learner's approved wording: change it only if the learner asks,
+  edit it in place, and leave the data-* schedule untouched so review progress
+  survives.
+-->
+<!-- APPEND NEW DECK CONTENT (topic groups / cards) ABOVE THIS LINE -->
+</section>
+
+<section id="notes">
+  <p class="eyebrow">Optional · written by the learner · committed verbatim · never edited</p>
+  <h2>Notes</h2>
+  <p class="notes-empty">Nothing here yet — and that's fine. Notes are optional: write one only when a topic earns some prose in your own words.</p>
+<!-- Note format (AI: copy exactly; remove the .notes-empty paragraph on first commit):
+  <article class="note" id="note-001">
+    <div class="commit-line">#001 · YYYY-MM-DD · session N · Topic Name</div>
+    <h3>Topic Name</h3>
+    <div class="note-body">
+      <p>The learner's committed text, verbatim. Paragraph breaks preserved.</p>
+    </div>
+    <div class="note-media">                        (optional, AI-made)
+      <p class="media-label">Figures · AI-made</p>
+      <figure id="n001-fig1">
+        ...inline SVG, Mermaid pre, or a self-contained interactive:
+        scoped markup + <style> + <script>(IIFE)</script>, all element
+        ids prefixed with the note id (n001-) to avoid collisions.
+        No external libraries beyond the Mermaid already on this page.
+        <figcaption>What it shows; reference the learner's text by
+        paragraph if helpful ("illustrates the dispatch path in ¶2").</figcaption>
+      </figure>
+    </div>
+  </article>
+  .note-body is the learner's alone — never write into it; the learner edits
+  their own notes.
+-->
+<!-- APPEND NEW NOTES ABOVE THIS LINE -->
+</section>
+
+<section id="sources">
+  <p class="eyebrow">The real reading — logged as you finish it</p>
+  <h2>Sources read</h2>
+  <p class="sources-empty">Nothing logged yet. Each source you actually go through lands here, with the topic it served and a one-line takeaway.</p>
+<!-- Source item format (AI: copy exactly; remove the .sources-empty paragraph on first log):
+  <li class="source">
+    <a href="https://example.com/...">Title of the source</a>
+    <span class="source-meta">article &middot; for: Topic Name &middot; read YYYY-MM-DD</span>
+    <span class="source-note">One line: the takeaway, or why it mattered.</span>
+  </li>
+  Learner-supplied local documents (cannot be embedded):
+  <li class="source">
+    <span class="source-doc">some-paper.pdf</span>
+    <span class="source-meta">local file &middot; for: Topic Name &middot; read YYYY-MM-DD</span>
+    <span class="source-note">What it covered. Ask the learner to re-attach it when its topic comes up.</span>
+  </li>
+-->
+  <ul class="sources">
+<!-- APPEND NEW SOURCES ABOVE THIS LINE -->
+  </ul>
+</section>
+
+<section id="session-log">
+  <p class="eyebrow">Append-only</p>
+  <h2>Session log</h2>
+  <ul class="session-log">
+{{SESSION_LOG_ITEMS}}
+<!-- Session log item format:
+  <li><span class="session-date">Session N · YYYY-MM-DD</span>
+  What was covered, what was read, where it stopped, in 3–5 lines of plain prose.</li>
+-->
+<!-- APPEND NEW SESSION LOG ENTRIES ABOVE THIS LINE -->
+  </ul>
+</section>
+
+<footer>
+  <details id="how-this-works">
+    <summary>How this document works</summary>
+    <pre>
+This is a reading document: a personal deck of flashcards you build while
+learning a subject by reading real sources, guided by an AI companion.
+
+THE LOOP
+The AI doesn't lecture you. For each topic it recommends real sources
+made by people — articles, videos, talks, interactive tools, long
+essays — and frames what to look for. You pick what to go through (one
+is often plenty) and dig into the real thing — that friction is the
+point. Then you talk it over: the AI raises questions and directions
+worth chasing. At a natural stopping
+point, the AI drafts a batch of flashcards from what you covered; you
+edit, cut, and keep the ones worth keeping. Approved cards are committed
+and never touched by the AI again. Prose notes are optional — write one
+only when a topic deserves it.
+
+THE DECK & REVIEW
+Every approved card lives in the Deck above. Click a card to flip it.
+The Review button (bottom right) runs spaced repetition (SM-2): it shows
+the cards due today, you rate how each went (Again / Hard / Good / Easy),
+and it schedules the next time you'll see them. All of that scheduling is
+stored inside this file, so your progress travels with it.
+
+THIS FILE IS THE SAVE STATE
+Everything lives in this one file: syllabus, concept map, deck (with its
+review schedule), notes, sources read, session log, and the AI's own
+working state. The chat is disposable; this file is not. Keep it safe.
+
+EDITING
+The Edit button makes your text editable in the browser — card fronts and
+backs, notes, and other human-facing text. Save writes the file back
+directly in desktop Chrome/Edge (you pick the file once); in other
+browsers and on phones it downloads a fresh copy — replace the old file
+with it. The AI's no-edit rules bind the AI, not you.
+
+RESUMING
+Upload this file to Claude and say "resume my learning". The file carries
+its own instructions, so this works even on an account without the
+reading-companion skill installed. If you also kept the companion
+transcript .md, attach that too to keep one continuous conversation log.
+    </pre>
+  </details>
+
+  <p class="eyebrow">For the AI — open if curious</p>
+
+  <details id="ai-state">
+    <summary>AI state</summary>
+    <pre id="ai-state-json">
+{{AI_STATE_JSON}}
+<!-- AI state schema. Fill real JSON above; KEEP this comment - it documents the format for every future session:
+{
+  "subject": "",
+  "position": { "last_committed": "", "in_progress": "none, or the topic mid-flight", "next_topic": "" },
+  "target_depth": "overview | working | deep — the level topics are taken to by default",
+  "current_sources": ["sources the learner is going through or about to, if any"],
+  "open_threads": ["questions or directions left hanging"],
+  "misconceptions": ["active confusions to watch for and revisit"],
+  "parked": ["topics or questions deliberately deferred"],
+  "learner_profile": {
+    "level": "calibration findings, refined over time",
+    "works_well": ["approaches that land"],
+    "avoid": ["approaches that don't"],
+    "notes": "anything else useful; refine, never reset"
+  },
+  "resume_instruction": "One or two sentences from the previous AI instance to the next one."
+}
+-->
+    </pre>
+  </details>
+
+  <details id="ai-instructions">
+    <summary>AI instructions</summary>
+    <pre>
+RESUME PROTOCOL — for the AI reading this document. (Humans: this is the
+machinery; everything above is for you.)
+
+This file is a reading document: the learner builds a deck of AI-drafted,
+learner-approved flashcards while learning a subject by reading real
+sources. You are the companion for the next session. This block never
+changes; carry it through verbatim whenever you regenerate this file.
+
+WHAT MAKES THIS SKILL DIFFERENT
+- The source teaches; you guide. Do not be the primary explainer. For
+  each topic, recommend real sources made by people and frame what to
+  look for, then let the material do the work. Sketch just enough to
+  orient them.
+- You curate with them; you don't author for them. The durable artifact
+  is flashcards you draft and the learner approves — not prose you write
+  or force them to write.
+
+ON RESUME
+1. Read the AI state JSON above. Reconstruct: position, current sources,
+   open threads, misconceptions, parked items, learner profile.
+2. Open with a catch-up summary — conversational, under ten lines:
+   - Session N, last commit #00X (date) — the staleness line, always
+     first. If it doesn't match what the learner remembers, stop and
+     help them find the newer copy of the file before changing
+     anything; copies can diverge when moving between platforms.
+   - Last time: 1-2 lines from the latest session log entry.
+   - Progress: topics done out of total, and the current topic.
+   - Due for review: how many cards have data-due on or before today
+     (count them from the Deck). Offer a quick informal warm-up on a few
+     of them if they'd like — see REVIEW below for the strict limits.
+   - Still open: open threads or parked items worth surfacing now — only
+     if any, at most 2-3. Keep misconceptions and the learner profile to
+     yourself; they're working notes, not a report card.
+   - Next: the proposed step, from the resume_instruction in state.
+3. Ask if they have the session transcript .md from previous sessions; if
+   supplied, append this session to it. If not, start a new one and note
+   the gap.
+4. Confirm where to pick up, then continue.
+5. If the document arrives damaged — sections missing, state JSON
+   malformed, markers gone, card data-* attributes stripped — say plainly
+   what's broken and propose the minimal repair. Never silently rebuild
+   content sections; damage is never license to rewrite committed cards or
+   notes, or to invent scheduling data.
+6. If the learner seems new to this document (it may have been shared with
+   them), point them at the "How this document works" section rather than
+   improvising an orientation.
+
+TEACHING — GUIDE TO SOURCES
+- For each topic, orient briefly: the shape of the idea and the
+  vocabulary, just enough that the learner knows what they're walking
+  into. Then hand off to the sources.
+- Recommend sources for the topic — think in terms of the topic, not a
+  single source. Use web search when available to find whatever genuinely
+  good material fits: one source or several. Anything counts — an
+  article, a wikipedia page, a youtube video, an online interactive tool
+  or visualization, a good long-form piece (a lecture or talk, a long
+  essay or writeup). Long-form is welcome. The one limit: nothing that
+  takes too long to get through — not a whole textbook, not an entire
+  course playlist; a single lecture or long essay is fine, a 12-hour
+  course is not. Never invent or guess links. Say what to look for
+  ("notice how they define X before Y"; "the worked example is the
+  crux"). The learner may also bring their own source; go with it.
+- Offer sources as options, not an assignment. When you give several,
+  they're a menu — the learner picks what fits their interest, time, and
+  format. Never expect them to go through all of them, and never withhold
+  a checkpoint because a recommended source went untouched. Often one good
+  source, well-engaged, is plenty; more than one is for when a single
+  source covers the topic poorly or a different format genuinely helps.
+- Let them go through what they chose. Do not pre-empt it with your own
+  full explanation. The friction of real sources is the point.
+- When they're back, don't quiz them like an exam. Prompt interesting
+  directions: what surprised them, what a source left implicit, how it
+  connects to something earlier, where they'd push further, what they'd
+  predict. Follow their curiosity. Fill genuine gaps the sources left, and
+  gently surface sub-structure they can't know to ask about — but as
+  invitations, not interrogation.
+- If they ask to just be told, tell them immediately. No friction, no
+  guilt. Source-first is the default, not a cage.
+- Follow tangents; they're welcome and expected. Track the parent topic.
+  Productive tangents get the same card treatment as any topic and can
+  carry their own sources. Dead-end tangents: surface the syllabus as the
+  way back.
+- Keep refining the learner_profile from how they respond. Never reset it.
+- Own the territory, but reach target_depth THROUGH the sources. You're
+  responsible for the topic getting to its target_depth — but you get
+  there by pointing to sources that go that deep and probing the
+  sub-structure in discussion, not by lecturing it yourself. Surface
+  sub-structure the learner can't know to ask for, and steer them to
+  material that covers it. Depth levels: overview (the skeleton) < working
+  (concrete mechanisms and real instances) < deep (edge cases, failure
+  modes, tradeoffs). Stopping shallow because the learner didn't push is
+  the central failure to avoid; quietly reverting to lecture mode to hit
+  depth is the other.
+- When a topic has reached its target_depth, propose a checkpoint. The
+  learner decides.
+
+CHECKPOINT — CARD CURATION PROTOCOL
+A checkpoint is a pause, not a test. The learner curates; you draft.
+1. Announce the checkpoint; name the topic, and name the depth reached,
+   offering to go further first: "this is a solid overview — make cards
+   here, or open up [the mechanisms / the edge cases] first?" If below
+   target_depth, list the specific unopened territory so the choice is
+   made against a visible map, not a blank.
+2. Draft a batch of flashcards covering what was learned — usually a
+   handful, not dozens. Aim for atomic, well-formed cards: one idea each,
+   a clear prompt on the front, a tight answer on the back. Favour cards
+   that test understanding and application, not just recall of a
+   definition. Present them in the conversation for approval — do NOT put
+   anything in the document yet.
+3. The learner curates: edits wording, cuts weak or redundant cards,
+   merges or splits, keeps the good ones. Loop as needed. Their approved
+   wording is final.
+4. On their clear go-ahead, commit the approved cards to the Deck,
+   VERBATIM as approved, grouped under their topic. Seed each new card's
+   scheduling: data-ef="2.50" data-interval="0" data-reps="0"
+   data-due=today data-last="". Grouping: if a .deck-topic group for that
+   topic already exists, add the cards INSIDE it — never make a second
+   group with the same heading; only start a new group for a topic that
+   has none. A tangent that yields cards gets its own group under the
+   tangent's name. Numbering: cards share one running sequence across the
+   whole deck (#001, #002, ...); notes keep their own separate sequence.
+   The card-/note- id prefix keeps the two apart.
+5. Optional note: offer — do not push — a short prose note if the topic
+   has a synthesis or insight worth capturing in the learner's own words.
+   If they want one, they write it; you commit it verbatim to Notes, and
+   never edit it after. Most topics won't get a note. That's expected.
+6. Log the source(s) actually gone through for this topic in Sources read: title,
+   link (or filename for local files), type, topic served, date, and a
+   one-line takeaway.
+
+AFTER COMMIT — update in one pass:
+- Syllabus statuses (pending/active/done); graft tangents under parents.
+- Concept map: add nodes and edges. Topic names and links only. Never
+  definitions or details.
+- AI state JSON: position, current_sources, threads, misconceptions,
+  parked, profile, target_depth, and a resume_instruction for the next
+  instance.
+- Session log: append or update this session's entry (3–5 lines) — note
+  what was read, not just what was discussed.
+- Persist the file. Append to the transcript .md.
+
+REVIEW — THE UI OWNS SCHEDULING
+- Card scheduling data (data-ef, data-interval, data-reps, data-due,
+  data-last) belongs to the built-in Review button ALONE. You must never
+  write, edit, or recompute these attributes, and you must never run the
+  SM-2 math yourself. The only scheduling you ever set is the seed values
+  on a brand-new card at commit (step 4 above).
+- In a session you MAY offer an informal, low-stakes warm-up: pull a few
+  cards that are due (data-due on or before today) and toss the fronts at
+  the learner conversationally, for engagement and reinforcement. This is
+  practice only. It changes NOTHING in the file — no schedules move, no
+  data-* attribute is touched. Real, schedule-advancing review happens
+  when the learner clicks Review. Keep the warm-up short and optional, and
+  say plainly that it doesn't affect their schedule.
+
+REVISITS
+Returning to a topic to correct or deepen it is just normal teaching and
+checkpointing — nothing special. It results in either edits to existing
+cards/notes or new ones added alongside. If the learner wants a committed
+card's text fixed, edit it IN PLACE and leave its data-* schedule untouched
+(never reset review progress). Notes the learner edits themselves. Nothing
+is dimmed, marked, or retired — the deck and notes just reflect the
+learner's current understanding.
+
+FIGURES & INTERACTIVES (optional, AI-made)
+- When a concept is genuinely visual, offer to make a diagram, animation,
+  or small interactive to help understanding — a teaching aid, offered
+  whenever it would clarify things, whether or not the learner is writing
+  a note. Show it in the conversation first (an artifact in chat, a small
+  preview file on a filesystem). Offer, don't push; it shouldn't become a
+  ritual.
+- To KEEP a figure, it goes in a note-media block attached to a note, so a
+  kept figure rides along with a note (a brief note can be written to host
+  one). Figures live BELOW the learner's text, labeled AI-made. Never
+  insert anything into .note-body — the learner's prose container is theirs
+  alone. Captions may point into the text by paragraph ("illustrates the
+  dispatch path in para 2").
+- Each figure is fully self-contained: inline SVG, a Mermaid pre, or
+  scoped markup + style + an IIFE script. Prefix all ids with the note id
+  (n001-...) so widgets never collide. No external libraries beyond the
+  Mermaid already loaded. Interactives should degrade to a sensible static
+  state without JS. ALL runtime DOM mutation — created elements, class or
+  style toggles, text changes — must happen inside an empty
+  &lt;div class="js-mount"&gt; in the figure; the script builds its whole
+  mutable UI there on load. Static no-JS fallback markup goes in
+  &lt;noscript&gt;, which is never mutated. The document's save function
+  empties js-mount divs, so saved files never carry baked runtime state and
+  every load-edit-save cycle is idempotent.
+- Media blocks are AI-authored, so unlike the text they MAY be revised or
+  replaced — but only when the learner asks. On regeneration they are
+  carried through byte-for-byte like everything else.
+
+SOURCES
+- Recommend sources per topic when they'd genuinely help — one or several,
+  of any kind (articles, wikipedia, videos, interactive tools, lectures,
+  talks, long essays), nothing so long it can't be finished soon. Use web
+  search when available; never invent or guess links. Unread suggestions
+  live in the conversation and in current_sources — the Sources read
+  section is for sources the learner has ACTUALLY gone through.
+- The learner may supply their own links and documents at any time. Local
+  files (PDFs etc.) cannot be embedded: record filename plus a note in
+  Sources read, and when a topic needs that document and it is not in the
+  current context, ask the learner to re-attach it. Never bluff
+  familiarity with a file you cannot currently see.
+
+HARD RULES
+- Don't rewrite a committed card's text on your own initiative — change it
+  only when the learner asks, editing in place and leaving its data-*
+  schedule untouched. Never write or rewrite note prose: .note-body is the
+  learner's alone; they edit their own notes.
+- Card scheduling data (data-*) is owned by the Review UI. You only ever
+  set the seed values on a new card. Never otherwise write or recompute
+  them.
+- Note-media blocks may change only at the learner's explicit request.
+- Session log and Sources read are append-only.
+- This instructions block passes through unchanged.
+- The document's own machinery — the toolbar markup, the stylesheet, the
+  review/editor/save script at the bottom of the file, the "How this
+  document works" block, and the reading-doc-version meta tag — passes
+  through unchanged on regeneration.
+- Concept map carries no content beyond names and relationships.
+
+LEARNER EDITS
+The document has an Edit/Save toolbar: the learner can edit their own
+cards, notes, and other human-facing text directly in the browser and save
+the file. This is their right — the no-edit rules above bind the AI, not
+the learner. Treat whatever the uploaded file contains as canonical; do
+not flag, revert, or comment on differences from what you remember
+committing.
+
+PERSISTENCE
+- Filesystem available (e.g. Claude Code): edit this file in place. Insert
+  new content above the APPEND marker comments. Touch nothing the hard
+  rules protect — and never touch existing cards' data-* attributes.
+- Chat with artifacts (e.g. claude.ai): regenerate the full file at each
+  checkpoint, mechanically — every existing card (with its exact data-*
+  scheduling), note, source, and log line, plus this block, carried
+  through byte-for-byte; new content only at the append markers. Remind
+  the learner to download the updated file before the session ends.
+- Transcript: a separate append-only markdown file named
+  &lt;subject-slug&gt;-transcript.md, organized by session with date
+  headers, lightly cleaned (drop false starts, keep substance).
+    </pre>
+  </details>
+</footer>
+
+</main>
+
+<div id="doc-toolbar" aria-label="Document tools">
+  <span id="toolbar-flash"></span>
+  <button id="btn-review" type="button">Review</button>
+  <button id="btn-edit" type="button">Edit</button>
+  <button id="btn-save" type="button">Save</button>
+</div>
+
+<div id="review-overlay" hidden role="dialog" aria-modal="true" aria-label="Card review">
+  <div class="review-panel">
+    <div class="js-mount"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // Stash concept-map sources BEFORE Mermaid renders them, so saving
+  // writes back graph source instead of baked SVG.
+  var mapSources = [];
+  document.querySelectorAll('pre.mermaid').forEach(function (el) {
+    mapSources.push(el.textContent);
+  });
+
+  // Render the concept map if Mermaid loaded; otherwise the raw graph
+  // source stays visible in the styled <pre> (offline fallback).
+  if (window.mermaid) {
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+  }
+
+  var btnReview = document.getElementById('btn-review');
+  var btnEdit = document.getElementById('btn-edit');
+  var btnSave = document.getElementById('btn-save');
+  var flash = document.getElementById('toolbar-flash');
+  var overlay = document.getElementById('review-overlay');
+  var reviewMount = overlay.querySelector('.js-mount');
+
+  // ---- Date helpers (local date, day granularity) ---------------------
+  function isoDate(d) {
+    var m = ('0' + (d.getMonth() + 1)).slice(-2);
+    var day = ('0' + d.getDate()).slice(-2);
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
+  function today() { return isoDate(new Date()); }
+
+  function allCards() {
+    return Array.prototype.slice.call(
+      document.querySelectorAll('#deck article.card'));
+  }
+  function dueCards() {
+    var t = today();
+    return allCards().filter(function (c) {
+      return (c.dataset.due || '') <= t;
+    });
+  }
+
+  function refreshReviewBtn() {
+    var n = dueCards().length;
+    btnReview.textContent = n ? ('Review · ' + n) : 'Review';
+    btnReview.classList.toggle('has-due', n > 0);
+  }
+  refreshReviewBtn();
+
+  // ---- Flip cards in the deck (transient; never marks the file dirty) --
+  document.addEventListener('click', function (e) {
+    if (document.body.classList.contains('editing')) return;
+    if (!e.target.closest) return;
+    if (e.target.closest('#review-overlay')) return;
+    var card = e.target.closest('#deck article.card');
+    if (card) card.classList.toggle('revealed');
+  });
+
+  // ---- SM-2 scheduling -------------------------------------------------
+  // quality: 1 = Again, 3 = Hard, 4 = Good, 5 = Easy. Correct when >= 3.
+  function schedule(card, quality) {
+    var ef = parseFloat(card.dataset.ef);
+    if (!(ef > 0)) ef = 2.5;
+    var interval = parseInt(card.dataset.interval, 10) || 0;
+    var reps = parseInt(card.dataset.reps, 10) || 0;
+
+    if (quality < 3) {
+      reps = 0;
+      interval = 1;
+    } else {
+      if (reps === 0) interval = 1;
+      else if (reps === 1) interval = 6;
+      else interval = Math.round(interval * ef);
+      reps += 1;
+    }
+    ef = ef + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+    if (ef < 1.3) ef = 1.3;
+
+    var due = new Date();
+    due.setDate(due.getDate() + interval);
+
+    card.dataset.ef = ef.toFixed(2);
+    card.dataset.interval = String(interval);
+    card.dataset.reps = String(reps);
+    card.dataset.due = isoDate(due);
+    card.dataset.last = today();
+    markDirty();
+  }
+
+  // ---- Review session --------------------------------------------------
+  var queue = [];
+  var pos = 0;
+  var initialCount = 0; // distinct cards this session (for the summary line)
+
+  // Grade the current card: always advance its persistent schedule, and on a
+  // failing "Again" re-queue it to reappear later THIS session (relearning),
+  // Anki-style, until the learner passes it.
+  function grade(card, quality) {
+    schedule(card, quality);
+    if (quality < 3) {
+      var insertAt = Math.min(pos + 3, queue.length);
+      queue.splice(insertAt, 0, card);
+    }
+    pos += 1;
+    renderCard();
+  }
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function openReview() { overlay.removeAttribute('hidden'); }
+  function closeReview() {
+    overlay.setAttribute('hidden', '');
+    reviewMount.innerHTML = '';
+    refreshReviewBtn();
+  }
+
+  function startReview() {
+    if (document.body.classList.contains('editing')) setEditing(false);
+    queue = shuffle(dueCards());
+    pos = 0;
+    initialCount = queue.length;
+    openReview();
+    if (queue.length === 0) renderEmpty();
+    else renderCard();
+  }
+
+  function el(tag, cls, html) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (html !== undefined) n.innerHTML = html;
+    return n;
+  }
+
+  function renderEmpty() {
+    reviewMount.innerHTML = '';
+    reviewMount.appendChild(el('p', 'rv-message', 'You’re all caught up — no cards are due today.'));
+    var actions = el('div', 'rv-actions');
+    var total = allCards().length;
+    if (total > 0) {
+      var all = el('button', null, 'Review all ' + total + ' anyway');
+      all.addEventListener('click', function () {
+        queue = shuffle(allCards()); pos = 0; initialCount = queue.length; renderCard();
+      });
+      actions.appendChild(all);
+    }
+    var close = el('button', null, 'Close');
+    close.addEventListener('click', closeReview);
+    actions.appendChild(close);
+    reviewMount.appendChild(actions);
+  }
+
+  function renderDone() {
+    reviewMount.innerHTML = '';
+    reviewMount.appendChild(el('p', 'rv-message', 'Done — ' + initialCount + ' card' + (initialCount === 1 ? '' : 's') + ' reviewed.'));
+    var actions = el('div', 'rv-actions');
+    var close = el('button', null, 'Close');
+    close.addEventListener('click', closeReview);
+    actions.appendChild(close);
+    reviewMount.appendChild(actions);
+  }
+
+  function renderCard() {
+    var card = queue[pos];
+    if (!card) { renderDone(); return; }
+    reviewMount.innerHTML = '';
+
+    var remaining = queue.length - pos;
+    var prog = el('div', 'rv-progress');
+    prog.appendChild(el('span', null, remaining + ' to go'));
+    var esc = el('span', null, 'Esc to close');
+    prog.appendChild(esc);
+    reviewMount.appendChild(prog);
+
+    var frontEl = card.querySelector('.card-front');
+    var backEl = card.querySelector('.card-back');
+    reviewMount.appendChild(el('div', 'rv-front', frontEl ? frontEl.innerHTML : ''));
+
+    var actions = el('div', 'rv-actions');
+    var flip = el('button', 'rv-flip', 'Show answer');
+    actions.appendChild(flip);
+    reviewMount.appendChild(actions);
+
+    flip.addEventListener('click', function () {
+      reviewMount.querySelector('.rv-front')
+        .insertAdjacentElement('afterend', el('div', 'rv-back', backEl ? backEl.innerHTML : ''));
+      actions.innerHTML = '';
+      [['Again', 1], ['Hard', 3], ['Good', 4], ['Easy', 5]].forEach(function (r) {
+        var b = el('button', null, r[0]);
+        b.addEventListener('click', function () {
+          grade(card, r[1]);
+        });
+        actions.appendChild(b);
+      });
+      reviewMount.appendChild(el('p', 'rv-sub', 'How well did you recall it?'));
+    });
+  }
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeReview();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !overlay.hasAttribute('hidden')) closeReview();
+  });
+  btnReview.addEventListener('click', startReview);
+
+  // ---- In-place editing and self-save ----------------------------------
+  // Everything human-authored is editable in the browser. Saving writes
+  // the file back directly where the File System Access API exists
+  // (desktop Chrome/Edge); elsewhere it downloads a fresh copy.
+  var EDITABLE = '.card-front, .card-back, .note-body, .note h3, ' +
+    '.source-note, .session-log li, header .tagline, .syllabus .topic-name';
+  var dirty = false;
+  var fileHandle = null;
+
+  function markDirty() {
+    dirty = true;
+    btnSave.classList.add('attention');
+  }
+
+  function setEditing(on) {
+    document.body.classList.toggle('editing', on);
+    document.querySelectorAll(EDITABLE).forEach(function (el) {
+      if (on) el.setAttribute('contenteditable', 'true');
+      else el.removeAttribute('contenteditable');
+    });
+    btnEdit.textContent = on ? 'Done' : 'Edit';
+  }
+
+  btnEdit.addEventListener('click', function () {
+    setEditing(!document.body.classList.contains('editing'));
+  });
+
+  document.addEventListener('input', function (e) {
+    if (e.target.closest && e.target.closest('[contenteditable="true"]')) {
+      markDirty();
+    }
+  });
+
+  function serialize() {
+    var clone = document.documentElement.cloneNode(true);
+    // Restore concept-map sources (same document order as the stash).
+    clone.querySelectorAll('pre.mermaid').forEach(function (pre, i) {
+      pre.removeAttribute('data-processed');
+      if (mapSources[i] !== undefined) pre.textContent = mapSources[i];
+    });
+    // Strip editing state.
+    clone.querySelectorAll('[contenteditable]').forEach(function (el) {
+      el.removeAttribute('contenteditable');
+    });
+    var body = clone.querySelector('body');
+    if (body) body.classList.remove('editing');
+    // Reset transient deck flips.
+    clone.querySelectorAll('.card.revealed').forEach(function (c) {
+      c.classList.remove('revealed');
+    });
+    // Close and empty the review overlay (its content is transient).
+    var ov = clone.querySelector('#review-overlay');
+    if (ov) ov.setAttribute('hidden', '');
+    // Toolbar back to rest state.
+    var be = clone.querySelector('#btn-edit');
+    if (be) be.textContent = 'Edit';
+    var br = clone.querySelector('#btn-review');
+    if (br) { br.textContent = 'Review'; br.classList.remove('has-due'); }
+    var fl = clone.querySelector('#toolbar-flash');
+    if (fl) { fl.textContent = ''; fl.style.opacity = ''; }
+    // Reset dynamic widget mounts; their scripts rebuild them on load.
+    clone.querySelectorAll('.js-mount').forEach(function (el) { el.innerHTML = ''; });
+    return '<!DOCTYPE html>\n' + clone.outerHTML;
+  }
+
+  function note(msg) {
+    flash.textContent = msg;
+    flash.style.opacity = '1';
+    setTimeout(function () { flash.style.opacity = '0'; }, 2200);
+  }
+
+  function suggestedName() {
+    var n = decodeURIComponent(location.pathname.split('/').pop() || '');
+    return /\.html?$/.test(n) ? n : 'reading-document.html';
+  }
+
+  async function save() {
+    var html = serialize();
+    if (window.showSaveFilePicker) {
+      try {
+        if (!fileHandle) {
+          fileHandle = await window.showSaveFilePicker({
+            suggestedName: suggestedName(),
+            types: [{ description: 'HTML document', accept: { 'text/html': ['.html'] } }]
+          });
+        }
+        var w = await fileHandle.createWritable();
+        await w.write(html);
+        await w.close();
+        dirty = false;
+        btnSave.classList.remove('attention');
+        note('Saved');
+        return;
+      } catch (err) {
+        if (err && err.name === 'AbortError') return; // user cancelled the picker
+        fileHandle = null; // fall through to download
+      }
+    }
+    var blob = new Blob([html], { type: 'text/html' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = suggestedName();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    dirty = false;
+    btnSave.classList.remove('attention');
+    note('Downloaded copy');
+  }
+
+  btnSave.addEventListener('click', save);
+
+  window.addEventListener('beforeunload', function (e) {
+    if (dirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+})();
+</script>
+</body>
+</html>
